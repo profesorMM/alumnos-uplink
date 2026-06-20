@@ -8,7 +8,8 @@ const estado = {
   trabajo: null,
   archivos: [],          // array de objetos File
   alumnosPorGrupo: {},
-  trabajosPorGrupo: {}
+  trabajosPorGrupo: {},
+  horarios: {}
 };
 
 const pantallas = {
@@ -35,6 +36,9 @@ const inputCamara   = document.getElementById('input-camara');
 const btnElegirArchivos = document.getElementById('btn-elegir-archivos');
 const btnTomarFoto  = document.getElementById('btn-tomar-foto');
 const btnEnviar     = document.getElementById('btn-enviar');
+const avisoGrupoCerrado = document.getElementById('aviso-grupo-cerrado');
+const textoAvisoCerrado = document.getElementById('texto-aviso-cerrado');
+const camposDespuesDeGrupo = document.getElementById('campos-despues-de-grupo');
 
 /* ---------------- Inicialización ---------------- */
 async function init() {
@@ -46,6 +50,7 @@ async function init() {
 
     estado.alumnosPorGrupo = data.alumnosPorGrupo;
     estado.trabajosPorGrupo = data.trabajosPorGrupo;
+    estado.horarios = data.horarios || {};
 
     renderGrupos();
     resetFormulario();
@@ -77,6 +82,9 @@ function resetFormulario() {
   selectTrabajo.innerHTML = '<option value="">Primero selecciona tu grupo</option>';
   selectTrabajo.disabled = true;
 
+  camposDespuesDeGrupo.classList.remove('oculto');
+  avisoGrupoCerrado.classList.add('oculto');
+
   bloquearArchivos();
   renderListaArchivos();
   actualizarBotonEnviar();
@@ -91,6 +99,8 @@ selectGrupo.addEventListener('change', () => {
   renderListaArchivos();
 
   if (!estado.grupo) {
+    camposDespuesDeGrupo.classList.remove('oculto');
+    avisoGrupoCerrado.classList.add('oculto');
     selectAlumno.innerHTML = '<option value="">Primero selecciona tu grupo</option>';
     selectAlumno.disabled = true;
     selectTrabajo.innerHTML = '<option value="">Primero selecciona tu grupo</option>';
@@ -99,6 +109,18 @@ selectGrupo.addEventListener('change', () => {
     actualizarBotonEnviar();
     return;
   }
+
+  // ¿El grupo está dentro de su horario de entrega?
+  const estadoHorario = estadoGrupoLocal(estado.grupo);
+  if (!estadoHorario.abierto) {
+    camposDespuesDeGrupo.classList.add('oculto');
+    textoAvisoCerrado.textContent = estadoHorario.mensaje;
+    avisoGrupoCerrado.classList.remove('oculto');
+    actualizarBotonEnviar();
+    return;
+  }
+  camposDespuesDeGrupo.classList.remove('oculto');
+  avisoGrupoCerrado.classList.add('oculto');
 
   // Alumnos del grupo
   selectAlumno.innerHTML = '<option value="">Selecciona tu nombre</option>';
@@ -123,6 +145,26 @@ selectGrupo.addEventListener('change', () => {
   evaluarDesbloqueoArchivos();
   actualizarBotonEnviar();
 });
+
+// Calcula localmente (en el navegador) si el grupo está dentro de su horario.
+// Esto es solo para la experiencia del alumno: el servidor vuelve a validar
+// con su propio reloj al momento de generar el token de subida.
+function estadoGrupoLocal(grupo) {
+  const h = estado.horarios[grupo];
+  if (!h || !h.modo || h.modo === 'ABIERTO') return { abierto: true };
+
+  const ahora = new Date();
+  const inicio = h.inicio ? new Date(h.inicio) : null;
+  const fin = h.fin ? new Date(h.fin) : null;
+
+  if (inicio && ahora < inicio) {
+    return { abierto: false, mensaje: 'Tu grupo aún no está en tiempo de entregar.' };
+  }
+  if (fin && ahora > fin) {
+    return { abierto: false, mensaje: 'Tu grupo ya no está en tiempo de entregar.' };
+  }
+  return { abierto: true };
+}
 
 selectAlumno.addEventListener('change', () => {
   estado.alumno = selectAlumno.value || null;
