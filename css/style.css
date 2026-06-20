@@ -174,6 +174,25 @@ select option {
 #seccion-archivos { margin-top: 6px; }
 .seccion-bloqueada { opacity: 0.5; }
 
+/* ---------------- Aviso: grupo fuera de horario ---------------- */
+.aviso-cerrado {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: rgba(255, 90, 106, 0.08);
+  border: 1.5px solid var(--rojo-error);
+  border-radius: 4px;
+  padding: 18px 20px;
+  margin-bottom: 22px;
+}
+.aviso-cerrado-icono { font-size: 26px; flex-shrink: 0; }
+.aviso-cerrado p {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--texto-claro);
+  line-height: 1.5;
+}
+
 .texto-ayuda { color: var(--texto-tenue); font-size: 0.95rem; margin-bottom: 16px; line-height: 1.5; }
 
 .zona-botones-archivo {
@@ -356,3 +375,144 @@ select option {
 @media (max-width: 360px) {
   html { font-size: 16px; }
 }
+
+/* ============================================================
+   PANEL DE ADMINISTRACIÓN (admin.html)
+   ============================================================ */
+.pin-contenedor {
+  max-width: 320px;
+  margin: 0 auto;
+  text-align: center;
+}
+.input-pin {
+  width: 100%;
+  text-align: center;
+  letter-spacing: 8px;
+  font-size: 1.6rem;
+  font-family: var(--fuente-titulo);
+  background: var(--azul-panel-claro);
+  border: 1.5px solid var(--azul-borde);
+  color: var(--cian);
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.input-pin:focus { outline: none; border-color: var(--cian); }
+.texto-error-pin { color: var(--rojo-error); font-size: 0.9rem; margin-bottom: 14px; min-height: 1.2em; }
+
+.tarjeta-grupo {
+  background: var(--azul-panel-claro);
+  border: 1px solid var(--azul-borde);
+  border-radius: 4px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.tarjeta-grupo-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.tarjeta-grupo-nombre {
+  font-family: var(--fuente-titulo);
+  font-size: 1.1rem;
+  color: var(--cian-suave);
+}
+.badge-estado {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-abierto { background: rgba(61, 220, 151, 0.15); color: var(--verde-exito); border: 1px solid var(--verde-exito); }
+.badge-programado { background: rgba(79, 214, 255, 0.15); color: var(--cian); border: 1px solid var(--cian); }
+.badge-cerrado { background: rgba(255, 90, 106, 0.15); color: var(--rojo-error); border: 1px solid var(--rojo-error); }
+
+.fila-radios {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.opcion-radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.opcion-radio input[type="radio"] {
+  width: 20px; height: 20px;
+  accent-color: var(--cian);
+  cursor: pointer;
+}
+
+.fila-fechas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.fila-fechas input[type="datetime-local"] {
+  width: 100%;
+  background: var(--azul-panel);
+  border: 1.5px solid var(--azul-borde);
+  color: var(--texto-claro);
+  font-family: var(--fuente-texto);
+  font-size: 0.92rem;
+  padding: 10px;
+  border-radius: 4px;
+}
+.fila-fechas input[type="datetime-local"]:focus { outline: none; border-color: var(--cian); }
+
+.btn-guardar-grupo {
+  background: var(--azul-acento);
+  color: #fff;
+  font-family: var(--fuente-texto);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 11px 18px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+}
+.btn-guardar-grupo:hover { background: #1d54d6; }
+
+.check-grupo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--azul-panel-claro);
+  border: 1px solid var(--azul-borde);
+  border-radius: 4px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+.check-grupo input[type="checkbox"] {
+  width: 20px; height: 20px;
+  accent-color: var(--cian);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.check-grupo span { font-size: 0.98rem; font-weight: 600; }
+
+.separador-admin {
+  border: none;
+  border-top: 1px solid var(--azul-borde);
+  margin: 28px 0;
+}
+
+.mensaje-admin {
+  font-size: 0.92rem;
+  padding: 10px 14px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+.mensaje-admin--ok { background: rgba(61,220,151,0.12); color: var(--verde-exito); border: 1px solid var(--verde-exito); }
+.mensaje-admin--error { background: rgba(255,90,106,0.12); color: var(--rojo-error); border: 1px solid var(--rojo-error); }
