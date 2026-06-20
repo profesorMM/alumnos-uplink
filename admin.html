@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Administración — Horarios y Trabajos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="fondo-grid"></div>
+
+<header class="encabezado">
+  <div class="encabezado-inner">
+    <div class="logo-sistema">
+      <span class="logo-icono">⬡</span>
+      <div>
+        <h1>PANEL DE <span>ADMINISTRACIÓN</span></h1>
+        <p class="subtitulo">Horarios y trabajos por grupo</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="contenedor-principal">
+
+  <!-- PANTALLA: PIN -->
+  <section id="pantalla-pin" class="panel pantalla">
+    <div class="pin-contenedor">
+      <h2 class="titulo-panel">Acceso restringido</h2>
+      <p class="texto-ayuda">Ingresa tu PIN para continuar.</p>
+      <input type="password" inputmode="numeric" id="input-pin" class="input-pin" placeholder="••••" maxlength="12">
+      <p class="texto-error-pin" id="texto-error-pin"></p>
+      <button id="btn-entrar" class="btn-principal">ENTRAR</button>
+    </div>
+  </section>
+
+  <!-- PANTALLA: ADMIN -->
+  <section id="pantalla-admin" class="panel pantalla oculto">
+
+    <h2 class="titulo-panel">Horario por grupo</h2>
+    <p class="texto-ayuda">
+      "Siempre abierto" deja entregar en cualquier momento. "Programado" solo permite
+      entregar entre la fecha/hora de inicio y la de fin que definas.
+    </p>
+    <div id="lista-grupos-horario"></div>
+
+    <hr class="separador-admin">
+
+    <h2 class="titulo-panel">Aplicar el mismo horario a varios grupos</h2>
+    <p class="texto-ayuda">Marca los grupos a los que quieras aplicar exactamente el mismo horario y guarda una sola vez.</p>
+    <div id="lista-checks-grupos"></div>
+
+    <div class="fila-radios">
+      <label class="opcion-radio">
+        <input type="radio" name="modo-bulk" value="ABIERTO" checked> Siempre abierto
+      </label>
+      <label class="opcion-radio">
+        <input type="radio" name="modo-bulk" value="PROGRAMADO"> Programado
+      </label>
+    </div>
+    <div class="fila-fechas" id="fechas-bulk" style="display:none;">
+      <input type="datetime-local" id="bulk-inicio">
+      <input type="datetime-local" id="bulk-fin">
+    </div>
+    <button id="btn-aplicar-bulk" class="btn-principal" style="margin-bottom:8px;">APLICAR A LOS GRUPOS SELECCIONADOS</button>
+    <div id="mensaje-bulk"></div>
+
+    <hr class="separador-admin">
+
+    <h2 class="titulo-panel">Dar de alta un trabajo nuevo</h2>
+    <p class="texto-ayuda">Agrega un trabajo a un grupo sin necesidad del Excel. Se suma a la lista que ya tiene ese grupo.</p>
+    <div class="campo">
+      <label for="select-grupo-trabajo">Grupo</label>
+      <select id="select-grupo-trabajo"></select>
+    </div>
+    <div class="campo">
+      <label for="input-nombre-trabajo">Nombre del trabajo</label>
+      <input type="text" id="input-nombre-trabajo" class="input-pin" style="letter-spacing:normal; font-size:1rem; text-align:left;" placeholder="Ej. Tarea 3">
+    </div>
+    <button id="btn-agregar-trabajo" class="btn-principal">AGREGAR TRABAJO</button>
+    <div id="mensaje-trabajo"></div>
+
+  </section>
+
+</main>
+
+<footer class="pie-pagina">
+  <p>Panel de administración · Acceso protegido con PIN</p>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
