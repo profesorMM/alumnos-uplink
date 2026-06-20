@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Entrega de Trabajos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="fondo-grid"></div>
+
+<header class="encabezado">
+  <div class="encabezado-inner">
+    <div class="logo-sistema">
+      <span class="logo-icono">⬡</span>
+      <div>
+        <h1>SISTEMA DE ENTREGA <span>DE TRABAJOS</span></h1>
+        <p class="subtitulo">Plataforma académica de recepción de evidencias</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="contenedor-principal">
+
+  <!-- CARGANDO -->
+  <section id="pantalla-cargando" class="panel pantalla pantalla-centrada">
+    <div class="spinner"></div>
+    <p>Inicializando sistema...</p>
+  </section>
+
+  <!-- PANTALLA ÚNICA: GRUPO + ALUMNO + TRABAJO + ARCHIVOS -->
+  <section id="pantalla-formulario" class="panel pantalla oculto">
+    <h2 class="titulo-panel">Entrega tu trabajo</h2>
+
+    <div class="campo">
+      <label for="select-grupo">Grupo</label>
+      <select id="select-grupo">
+        <option value="">Selecciona tu grupo</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="select-alumno">Alumno</label>
+      <select id="select-alumno" disabled>
+        <option value="">Primero selecciona tu grupo</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="select-trabajo">Trabajo a entregar</label>
+      <select id="select-trabajo" disabled>
+        <option value="">Primero selecciona tu grupo</option>
+      </select>
+    </div>
+
+    <div class="campo" id="seccion-archivos">
+      <label>Archivos a entregar</label>
+      <p class="texto-ayuda" id="mensaje-archivos-bloqueados">Completa grupo, alumno y trabajo para habilitar la subida de archivos.</p>
+
+      <div class="zona-botones-archivo">
+        <label class="btn-accion" id="btn-elegir-archivos">
+          📁 Elegir archivos
+          <input type="file" id="input-archivos" multiple hidden disabled>
+        </label>
+        <label class="btn-accion btn-accion--secundario" id="btn-tomar-foto">
+          📷 Tomar foto
+          <input type="file" id="input-camara" accept="image/*" capture="environment" hidden disabled>
+        </label>
+        <span class="contador-archivos" id="contador-archivos">0 / 10</span>
+      </div>
+
+      <div id="lista-archivos-seleccionados" class="lista-archivos"></div>
+    </div>
+
+    <button id="btn-enviar" class="btn-principal" disabled>ENVIAR ENTREGA</button>
+  </section>
+
+  <!-- ESPERA -->
+  <section id="pantalla-espera" class="panel pantalla oculto pantalla-centrada">
+    <div class="spinner spinner--grande"></div>
+    <p id="texto-progreso" class="texto-progreso">Subiendo tus archivos...</p>
+    <div class="barra-progreso-fondo">
+      <div id="barra-progreso" class="barra-progreso"></div>
+    </div>
+    <p class="texto-ayuda">No cierres ni recargues esta ventana.</p>
+  </section>
+
+  <!-- CONFIRMACIÓN -->
+  <section id="pantalla-confirmacion" class="panel pantalla oculto pantalla-centrada">
+    <div class="icono-exito">✔</div>
+    <h2 class="titulo-panel">Entrega recibida</h2>
+    <div class="ficha-confirmacion">
+      <p><strong>Grupo:</strong> <span id="conf-grupo"></span></p>
+      <p><strong>Alumno:</strong> <span id="conf-alumno"></span></p>
+      <p><strong>Trabajo:</strong> <span id="conf-trabajo"></span></p>
+      <p><strong>Fecha y hora:</strong> <span id="conf-fecha"></span></p>
+      <p><strong>Archivos:</strong></p>
+      <ul id="conf-lista-archivos" class="lista-archivos-conf"></ul>
+    </div>
+    <button id="btn-nueva-entrega" class="btn-principal">Entregar otro trabajo</button>
+  </section>
+
+  <!-- ERROR -->
+  <section id="pantalla-error" class="panel pantalla oculto pantalla-centrada">
+    <div class="icono-error">⚠</div>
+    <h2 class="titulo-panel">Algo salió mal</h2>
+    <p id="texto-error" class="texto-ayuda"></p>
+    <button id="btn-reintentar" class="btn-principal">Reintentar</button>
+  </section>
+
+</main>
+
+<footer class="pie-pagina">
+  <p>Sistema de entrega académica · Conexión segura con Google Drive</p>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

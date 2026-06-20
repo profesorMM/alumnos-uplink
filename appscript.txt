@@ -1,0 +1,149 @@
+/* ============================================================
+   CODIGO.GS — Backend del Sistema de Entrega de Trabajos
+   ============================================================
+   Pega este código en Apps Script (script.google.com)
+   vinculado a tu Google Sheet "base de datos".
+   ============================================================ */
+
+// ============ CONFIGURACIÓN: EDITA ESTOS DOS VALORES ============
+const SPREADSHEET_ID = '1TTFL98P681yJPCYOyB7K4zivccJFxk5qFaW74xJasD0';
+const ROOT_FOLDER_ID  = '1FsC5bkaDl_6eF0kn7ockUg83m3ZNFFml?usp=drive_link';
+// ==================================================================
+
+const SHEET_ALUMNOS  = 'Alumnos';   // Columnas: Grupo | Alumno
+const SHEET_TR        = 'TR';        // Encabezado = grupo, filas = trabajos
+const SHEET_ENTREGAS  = 'Entregas';  // Se crea automáticamente
+
+/* ---------------- Enrutador ---------------- */
+function doGet(e) {
+  const action = e.parameter.action;
+  try {
+    if (action === 'initdata') return jsonOut(getInitData());
+    if (action === 'token')    return jsonOut(getUploadToken(e.parameter.grupo, e.parameter.alumno));
+    return jsonOut({ error: 'Acción GET no reconocida: ' + action });
+  } catch (err) {
+    return jsonOut({ error: err.message });
+  }
+}
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    if (data.action === 'logEntry')  return jsonOut(logEntry(data));
+    if (data.action === 'syncExcel') return jsonOut(syncExcel(data));
+    return jsonOut({ error: 'Acción POST no reconocida: ' + data.action });
+  } catch (err) {
+    return jsonOut({ error: err.message });
+  }
+}
+
+function jsonOut(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ---------------- Datos iniciales para el formulario ---------------- */
+function getInitData() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+
+  // --- Alumnos por grupo ---
+  const shAl = ss.getSheetByName(SHEET_ALUMNOS);
+  if (!shAl) throw new Error('No existe la hoja "Alumnos"');
+  const valAl = shAl.getDataRange().getValues();
+  const alumnosPorGrupo = {};
+  for (let i = 1; i < valAl.length; i++) {
+    const grupo = String(valAl[i][0]).trim();
+    const alumno = String(valAl[i][1]).trim();
+    if (!grupo || !alumno) continue;
+    if (!alumnosPorGrupo[grupo]) alumnosPorGrupo[grupo] = [];
+    alumnosPorGrupo[grupo].push(alumno);
+  }
+
+  // --- Trabajos por grupo (hoja TR) ---
+  const shTr = ss.getSheetByName(SHEET_TR);
+  if (!shTr) throw new Error('No existe la hoja "TR"');
+  const valTr = shTr.getDataRange().getValues();
+  const encabezados = valTr[0] || [];
+  const trabajosPorGrupo = {};
+  encabezados.forEach((grupoRaw, col) => {
+    const grupo = String(grupoRaw).trim();
+    if (!grupo) return;
+    trabajosPorGrupo[grupo] = [];
+    for (let row = 1; row < valTr.length; row++) {
+      const t = valTr[row][col];
+      if (t !== '' && t !== undefined && t !== null) {
+        trabajosPorGrupo[grupo].push(String(t).trim());
+      }
+    }
+  });
+
+  return { alumnosPorGrupo, trabajosPorGrupo };
+}
+
+/* ---------------- Token temporal + carpeta del alumno ---------------- */
+function getUploadToken(grupo, alumno) {
+  if (!grupo || !alumno) throw new Error('Falta grupo o alumno');
+  const root = DriveApp.getFolderById(ROOT_FOLDER_ID);
+  const folderGrupo = getOrCreateFolder(root, grupo);
+  const folderAlumno = getOrCreateFolder(folderGrupo, alumno);
+
+  return {
+    token: ScriptApp.getOAuthToken(),
+    folderId: folderAlumno.getId()
+  };
+}
+
+function getOrCreateFolder(parent, name) {
+  const it = parent.getFoldersByName(name);
+  if (it.hasNext()) return it.next();
+  return parent.createFolder(name);
+}
+
+/* ---------------- Registrar entrega en la hoja "Entregas" ---------------- */
+function logEntry(data) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  let sh = ss.getSheetByName(SHEET_ENTREGAS);
+  if (!sh) {
+    sh = ss.insertSheet(SHEET_ENTREGAS);
+    sh.appendRow(['Fecha y hora', 'Grupo', 'Alumno', 'Trabajo', 'Archivos']);
+    sh.setFrozenRows(1);
+  }
+
+  const archivosTexto = (data.archivos || [])
+    .map(a => `${a.nombre}: ${a.link}`)
+    .join(' | ');
+
+  sh.appendRow([
+    new Date(),
+    data.grupo,
+    data.alumno,
+    data.trabajo,
+    archivosTexto
+  ]);
+
+  return { ok: true };
+}
+
+/* ---------------- Sincronizar el Excel local del profesor ---------------- */
+function syncExcel(data) {
+  if (!data.alumnos || !data.tr) throw new Error('Datos incompletos para sincronizar');
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+
+  // Hoja Alumnos
+  let shAl = ss.getSheetByName(SHEET_ALUMNOS);
+  if (!shAl) shAl = ss.insertSheet(SHEET_ALUMNOS);
+  shAl.clear();
+  if (data.alumnos.length > 0) {
+    shAl.getRange(1, 1, data.alumnos.length, data.alumnos[0].length).setValues(data.alumnos);
+  }
+
+  // Hoja TR
+  let shTr = ss.getSheetByName(SHEET_TR);
+  if (!shTr) shTr = ss.insertSheet(SHEET_TR);
+  shTr.clear();
+  if (data.tr.length > 0) {
+    shTr.getRange(1, 1, data.tr.length, data.tr[0].length).setValues(data.tr);
+  }
+
+  return { ok: true, mensaje: 'Sincronización completa' };
+}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sincronizar Excel — Panel del Profesor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="fondo-grid"></div>
+
+<header class="encabezado">
+  <div class="encabezado-inner">
+    <div class="logo-sistema">
+      <span class="logo-icono">⬡</span>
+      <div>
+        <h1>PANEL DEL <span>PROFESOR</span></h1>
+        <p class="subtitulo">Sincronización de grupos, alumnos y trabajos</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="contenedor-principal">
+
+  <section class="panel pantalla">
+    <h2 class="titulo-panel">Sincronizar Excel local</h2>
+    <p class="texto-ayuda">
+      Selecciona tu Excel (.xlsx) tal cual lo usas normalmente: una hoja <strong>"TR"</strong>
+      (encabezado = nombre de cada grupo, filas hacia abajo = trabajos de ese grupo) y
+      <strong>una hoja por grupo</strong> (con el mismo nombre que aparece en "TR", por ejemplo "1C")
+      que tenga una columna con el encabezado <strong>"NOMBRE"</strong>. El sistema detecta automáticamente
+      esa columna y extrae a los alumnos — no necesitas crear ninguna hoja adicional ni mover nada.
+      Las demás hojas (horarios, planeación, etc.) se ignoran.
+    </p>
+
+    <div class="zona-botones-archivo">
+      <label class="btn-accion">
+        📁 Seleccionar Excel (.xlsx)
+        <input type="file" id="input-excel" accept=".xlsx,.xls" hidden>
+      </label>
+      <span id="nombre-archivo-excel" class="contador-archivos"></span>
+    </div>
+
+    <div id="previsualizacion" class="oculto">
+      <h3 class="subtitulo-panel">Vista previa</h3>
+      <p class="texto-ayuda" id="resumen-preview"></p>
+    </div>
+
+    <button id="btn-sincronizar" class="btn-principal" disabled>SINCRONIZAR CON EL SISTEMA</button>
+
+    <div id="estado-sync" class="ficha-confirmacion oculto"></div>
+  </section>
+
+  <section class="panel pantalla" style="margin-top:20px;">
+    <h2 class="titulo-panel">Configuración requerida</h2>
+    <p class="texto-ayuda">
+      Esta página necesita que <code>js/config.js</code> tenga la URL correcta de tu Apps Script
+      (la misma que usa <code>index.html</code>). Ver <strong>README.md</strong> para el detalle de despliegue.
+    </p>
+  </section>
+
+</main>
+
+<footer class="pie-pagina">
+  <p>Panel de profesor · Lectura local, sin enviar el archivo a terceros</p>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>
